@@ -31,6 +31,16 @@ def similarity_shading(meshes, fragments, cameras):
     return pixel_similarity
 
 
+def binary_shading(meshes, fragments):
+    faces = meshes.faces_packed()
+    vertex_normals = meshes.verts_normals_packed()
+    faces_normals = vertex_normals[faces]
+    object_mask = interpolate_face_attributes(
+        fragments.pix_to_face, fragments.bary_coords, torch.ones_like(faces_normals)
+    )
+    return object_mask
+
+
 def get_relative_depth_map(fragments, pad_value=10):
     absolute_depth = fragments.zbuf[..., 0]
     no_depth = -1
